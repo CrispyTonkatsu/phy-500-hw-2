@@ -1,0 +1,12 @@
+{
+  "reportUnknownMemberType": false,
+  "reportUnknownArgumentType": false,
+  "reportUnusedCallResult": false,
+  "reportMissingTypeStubs": false,
+  "reportUnknownVariableType": false,
+  "reportUnknownParameterType": false,
+  "reportMissingParameterType": false,
+  "reportAny": false,
+  "reportUnknownLambdaType": false,
+  "reportConstantRedefinition": false
+}
