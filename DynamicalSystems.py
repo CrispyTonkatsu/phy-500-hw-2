@@ -69,8 +69,9 @@ v = ddy * flow_dir
 
 plt.quiver(y, dy, u, v, zorder=2)
 
+plt.xlabel("y")
+plt.ylabel("dy")
 plt.grid(True)
-
 plt.show()
 
 # %% [markdown]
@@ -170,6 +171,8 @@ dY = arrow_length * (dY / M)
 
 plt.quiver(T, Y, dT, dY, dT)
 
+plt.xlabel("t")
+plt.ylabel("y")
 plt.legend()
 plt.show()
 
@@ -281,6 +284,8 @@ for i, mat in enumerate(matrices):
 
     plt.scatter(mat_trace, mat_det, label=f"$A_{{{i + 1}}}$")
 
+plt.xlabel(r"trace")
+plt.ylabel(r"det")
 plt.legend()
 plt.show()
 
@@ -383,7 +388,10 @@ U_unit = U / M
 V_unit = V / M
 
 plt.figure(figsize=(8, 4))
+plt.title(f"Slope field for system $A_{1}$")
 
 plt.quiver(X, Y, U_unit, V_unit, M)
 
+plt.xlabel("q")
+plt.ylabel("v")
 plt.show()
