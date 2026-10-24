@@ -371,27 +371,32 @@ r"""
 """
 
 # %% jupyter={"source_hidden": true}
-x = np.linspace(-3, 3)
-y = np.linspace(-3, 3)
 
-A = sp.matrix2numpy(A1, dtype=float)
 
-step = 2
-X, Y = np.meshgrid(x[::step], y[::step])
-U = A[0, 0] * X + A[0, 1] * Y
-V = A[1, 0] * X + A[1, 1] * Y
+def matrix_slope_field(A):
+    x = np.linspace(-3, 3)
+    y = np.linspace(-3, 3)
 
-M = np.sqrt(U**2 + V**2)
-M[M == 0] = 1.0
+    step = 2
+    X, Y = np.meshgrid(x[::step], y[::step])
+    U = A[0, 0] * X + A[0, 1] * Y
+    V = A[1, 0] * X + A[1, 1] * Y
 
-U_unit = U / M
-V_unit = V / M
+    M = np.sqrt(U**2 + V**2)
+    M[M == 0] = 1.0
 
-plt.figure(figsize=(8, 4))
-plt.title(f"Slope field for system $A_{1}$")
+    U_unit = U / M
+    V_unit = V / M
 
-plt.quiver(X, Y, U_unit, V_unit, M)
+    plt.figure(figsize=(8, 4))
+    plt.title(f"Slope field for system $A_{1}$")
 
-plt.xlabel("q")
-plt.ylabel("v")
-plt.show()
+    plt.quiver(X, Y, U_unit, V_unit, M)
+
+    plt.xlabel("q")
+    plt.ylabel("v")
+    plt.grid(True)
+    plt.show()
+
+
+matrix_slope_field(sp.matrix2numpy(A1, dtype=float))
