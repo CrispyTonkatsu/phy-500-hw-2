@@ -373,7 +373,7 @@ r"""
 # %% jupyter={"source_hidden": true}
 
 
-def matrix_slope_field(A):
+def matrix_slope_field(i, A):
     x = np.linspace(-3, 3)
     y = np.linspace(-3, 3)
 
@@ -389,7 +389,7 @@ def matrix_slope_field(A):
     V_unit = V / M
 
     plt.figure(figsize=(8, 4))
-    plt.title(f"Slope field for system $A_{1}$")
+    plt.title(f"Slope field for system $A_{i + 1}$")
 
     plt.quiver(X, Y, U_unit, V_unit, M)
 
@@ -399,4 +399,5 @@ def matrix_slope_field(A):
     plt.show()
 
 
-matrix_slope_field(sp.matrix2numpy(A1, dtype=float))
+for i, mat in enumerate(matrices):
+    matrix_slope_field(i, sp.matrix2numpy(mat, dtype=float))
