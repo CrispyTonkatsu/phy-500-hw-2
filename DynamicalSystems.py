@@ -439,3 +439,8 @@ for i, mat in enumerate(matrices):
             eigvecs.append(None)
 
     matrix_slope_field(i, sp.matrix2numpy(mat, dtype=float), x_inits, eigvecs)
+
+# %% [markdown]
+r"""
+### Eigen Vectors for matrices with Complex Eigen Values
+"""
