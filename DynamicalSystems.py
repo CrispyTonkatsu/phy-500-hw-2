@@ -716,7 +716,7 @@ for x_0 in x_inits:
 
     plt.text(x_0[0], x_0[1] + 0.1, f"$x_0 = {x_0}$")
 
-plt.quiver(Theta, Omega, dTheta, dOmega, dTheta)
+plt.streamplot(Theta, Omega, dTheta, dOmega)
 
 plt.xlabel(r"$\theta$")
 plt.ylabel(r"$\omega$")

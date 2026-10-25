@@ -15,8 +15,14 @@
               sympy
               numpy
               matplotlib
+
+              playwright
+              nbconvert
             ]
           ))
+
+          playwright
+          playwright-driver
 
           jupyter
 
