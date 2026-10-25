@@ -31,12 +31,12 @@ $$
 \dot{y} = y(y - 1)(2 - y),\ y \geq 0
 $$
 
-### Find all equilibrium concentrations
+### Find all equilibrium concentrations (a)
 $$
 \dot{y} = 0 \rightarrow y = 0, 1, 2
 $$
 
-### Plot the phase line on the $(y,\dot{y})$-plane
+### Plot the phase line on the $(y,\dot{y})$-plane (b)
 """
 
 # %% jupyter={"source_hidden": true}
@@ -76,7 +76,7 @@ plt.show()
 
 # %% [markdown]
 r"""
-### Classify each equilibrium as a source or sink based on the direction of the arrows on your phase line
+### Classify each equilibrium as a source or sink based on the direction of the arrows on your phase line (c)
 $$
 y = 0 \rightarrow \text{sink/stable}
 $$
@@ -89,7 +89,7 @@ $$
 y = 2 \rightarrow \text{sink/stable}
 $$
 
-### Based on your phase line, explain briefly why this system exhibits bistable behavior
+### Based on your phase line, explain briefly why this system exhibits bistable behavior (d)
 This is a bistable system given there are two states that are considered stable for the system.
 One can think of this as a light switch where it'll either be on or off.
 It could get stuck in the middle, but any small disturbance will take it back to either of the two.
@@ -102,7 +102,7 @@ $$
 \dot{y} = -ty
 $$
 
-### Use the classic "separate and integrate" technique to obtain the general solution to the ODE
+### Use the classic "separate and integrate" technique to obtain the general solution to the ODE(2)
 $$
 \begin{align}
     \frac{dy}{dt} &= -ty \\
@@ -112,7 +112,7 @@ $$
 \end{align}
 $$
 
-### Plot a slope field on the $(t, y)$-plane
+### Plot a slope field on the $(t, y)$-plane (3, 4)
 """
 
 
@@ -179,7 +179,7 @@ plt.show()
 # %% [markdown]
 r"""
 # Linear Dynamical Systems
-## Equilibrium Points
+## Equilibrium Points (1)
 Since these systems are homogeneous linear, the equilibrium
 $Ax = \vec{0}$ can only have solution $x = \vec{0}$.
 This is because all 6 matrices have $\det(A) \neq 0$.
@@ -202,7 +202,7 @@ for i, mat in enumerate(matrices):
 
 # %% [markdown]
 r"""
-## Eigen Values, Eigen Vectors and Classification
+## Eigen Values, Eigen Vectors and Classification (2, 3)
 """
 
 # %% jupyter={"source_hidden": true}
@@ -265,7 +265,7 @@ for i, mat in enumerate(matrices):
 
 # %% [markdown]
 r"""
-## Pointcare Trace Diagram Interpretation
+## Pointcare Trace Diagram Interpretation (4)
 """
 
 # %% jupyter={"source_hidden": true}
@@ -326,7 +326,7 @@ This would be the case of a spring that pushes outwards instead of inwards, ther
 
 # %% [markdown]
 r"""
-## Analytical Solutions using the Matrix Exponential
+## Analytical Solutions using the Matrix Exponential (5)
 
 $$
 \dot{x} = Ax \rightarrow x(t) = e^{At}x_0
@@ -367,7 +367,7 @@ for i, mat in enumerate(matrices):
 
 # %% [markdown]
 r"""
-## Vector fields, Phase portraits and Eigen vector directions
+## Vector fields, Phase portraits and Eigen vector directions (6, 7, 8)
 """
 
 # %% jupyter={"source_hidden": true}
@@ -401,7 +401,7 @@ def matrix_slope_field(i, A, x_inits, eigvecs):
 
     h = q[1] - q[0]
 
-    plt.figure(figsize=(8, 4))
+    plt.figure(figsize=(6, 6))
     plt.title(f"Slope field for system $A_{i + 1}$ with $ \\Delta t = {h}$")
 
     plt.quiver(Q, V, U_unit, V_unit, M)
@@ -442,5 +442,237 @@ for i, mat in enumerate(matrices):
 
 # %% [markdown]
 r"""
-### Eigen Vectors for matrices with Complex Eigen Values
+### Eigen Vector Interpretation (8)
+#### Real Eigen Values
+##### $A_1$
+As both values are real negative, one can see how the vectors represent the direction of pull towards the origin.
+The magnitude of the respective eigenvalue is also respective to how strongly they pull towards the origin.
+
+##### $A_2$
+It is the same as it is for $A_1$ but instead of pulling it is pushing outwards from the origin.
+
+##### $A_6$
+As it has real eigenvalues of different signs, one can see that for the positive eigenvalue it pushes outwards from the origin and then the negative eigenvalue pushes towards the origin.
+This is further reinforced by the numerical solutions.
+
+#### Complex Eigen Values
+In the case for these matrices, we can't visualize a complex vector in our 2D plane.
+However, from the complex terms, we can evaluate that there will be rotation about the origin.
+The real part just like in the entirely real cases defines the decay or growth.
+The complex part here dictates the oscillation speed.
+The eigen vector describes how based on those 2 properties, the spiral will be morphed into the shapes we see in the graphs.
 """
+
+# %% [markdown]
+r"""
+## Analytical vs Numerical Solution, Euler integration and $\Delta t$ (9, 12)
+For this I decided to go with a matrix $A_5$ as there is no growth or decay. This will be particularly useful at showing how the numerical method is adding energy via its error.
+"""
+
+# %% jupyter={"source_hidden": true}
+
+
+def spring_sol(t, q0, v0):
+
+    q_t = q0 * (1 - np.exp(1j)) ** 2 + 1j * v0 * (1 - np.exp(2j * t))
+
+    v_t = (
+        1j * q0 * np.exp(2j * t)
+        - 1j * q0
+        + v0 * np.exp(2j * t)
+        + 2 * v0 * np.exp(1j * t)
+        + v0
+    )
+
+    q_t *= (1 / 2) * np.exp(-1j * t)
+    v_t *= (1 / 2) * np.exp(-1j * t)
+
+    return np.real(q_t), np.real(v_t)
+
+
+def spring_numerical_sol(h, x_0, end):
+    t_num = np.linspace(0, end, int(end / h) + 1)
+    return t_num, solve_path(sp.matrix2numpy(A5), h, x_0, len(t_num))
+
+
+q0 = 0
+v0 = 1
+end = 10
+
+steps = [0.001, 0.01, 0.1, 0.2, 0.5]
+
+t = np.linspace(0, end)
+q, v = spring_sol(t, q0, v0)
+
+plt.figure(figsize=(8, 4))
+plt.title(f"Analytical vs Numerical Solution for $A_5$ with $q_0 = {q0}, v_0 = {v0}$")
+
+plt.plot(t, q)
+for step in steps:
+    t_num, sol_num = spring_numerical_sol(step, np.array([q0, v0]), end)
+    plt.plot(t_num, sol_num[:, 0], linestyle="--", label=f"$h = {step}$")
+
+plt.xlabel("t")
+plt.ylabel("q")
+plt.grid(True)
+plt.legend()
+plt.show()
+
+# %% [markdown]
+r"""
+As it can be seen in the picture above, as $\Delta t$ grows, the error and phase offset grow.
+This is coming from the error of the function over time which is accumulating into energy and showing that exponential amplitude growth.
+This can also be seen in the phase portraits above as the orbits of the numerical solutions are not perfect circles for $A_6$ while the slope field is a perfect circle.
+While the numerical solution encompasses the oscillatory nature, it fails to capture the stability of a system.
+"""
+
+# %% [markdown]
+r"""
+## Stiffness, damping and instability (10, 11)
+### $A_1$
+$$
+k = 2, c = 3
+$$
+
+This system doesn't oscillate as the damping is stronger than the spring.
+
+### $A_2$
+$$
+k = 2, c = -3
+$$
+
+This system exponentially grows because the spring is constantly pushing away and that overpowers the damping.
+
+### $A_3$
+$$
+k = 5, c = 2
+$$
+
+This system oscillates because the spring is stronger than the damping.
+However, it will eventually converge as energy is removed by the damping.
+
+### $A_4$
+$$
+k = 5, c = -2
+$$
+
+This system oscillates because the spring is stronger than the damping.
+However, it exponentially grows as the damping is adding energy to the system instead of removing it.
+
+### $A_5$
+$$
+k = 1, c = 0
+$$
+
+This system oscillates forever because the spring is undamped.
+This means that the system doesn't lose energy, which means that the mass will oscillate forever.
+
+### $A_6$
+$$
+k = -1, c = 0
+$$
+
+Like the other systems that exponentially grow, this one has a spring that is constantly pushing away.
+Therefore, this oscillation continues to gather energy no matter what, making it highly unstable.
+"""
+
+# %% [markdown]
+r"""
+## Euler integration and timestep
+Note: Check the earlier segment on the simulation as I discussed the same points as I did here.
+
+The key take away from a growing $\Delta t$ is that the energy in the system will be corrupted someties by non-existing energy loss or gain.
+This means that the system will either grow over time or will damp itself when numerically solved.
+In the case of $A_5$, it can be seen how the energy is added as the amplitude grows over time.
+"""
+
+# %% [markdown]
+r"""
+# Non-linear pendulum
+## Analytical Analysis
+### State-space formulation (13)
+$$
+\begin{align}
+    \ddot{\theta} &= -\sin(\theta) \\
+    \begin{bmatrix}
+        \dot{\theta} \\ \dot{\omega}
+    \end{bmatrix}
+    &=
+    \begin{bmatrix}
+        0 & 1 \\
+        -\frac{sin(\theta)}{\theta} & 0
+    \end{bmatrix}
+    \begin{bmatrix} 
+        \theta \\ \omega
+    \end{bmatrix}
+\end{align}
+$$
+"""
+
+# %% [markdown]
+r"""
+### Equilibria (14)
+$$
+\begin{align}
+    \ddot{\theta} &= 0 \\
+    -\sin(\theta) &= 0 \\
+    \sin(\theta) &= 0 \\
+    \theta &= \arcsin(0) \\
+    \theta &= 0, k\pi \leftarrow k \in Z \\
+    \text{Down Eq}: k &= 2n, n \in Z \\
+    \text{Up Eq}: k &= 2n + 1, n \in Z \\
+\end{align}
+$$
+"""
+
+# %% [markdown]
+r"""
+### Jacobian (15)
+To get $J$, just get the derivatives of $\ddot{\theta}$ with respect to $\theta$ and $\dot{\theta}$
+$$
+J = \begin{bmatrix}
+    0 & 1 \\
+    -cos(\theta) & 0
+\end{bmatrix}
+$$
+"""
+
+# %% [markdown]
+r"""
+### Linearization (16)
+$$
+J_0 = \begin{bmatrix}
+    0 & 1 \\
+    -1 & 0
+\end{bmatrix}
+$$
+$$
+J_{\pi} = \begin{bmatrix}
+    0 & 1 \\
+    1 & 0
+\end{bmatrix}
+$$
+"""
+
+# %% [markdown]
+r""" 
+### Local Stability (17)
+$$
+\text{eigvals}(J_0) = -i, i
+$$
+Given that a pendulum will oscillate at the bottom, it makes sense that we get the complex eigven values for this equilibrium point.
+Additionally, as there is no damping, there is no real part just like in the linear system analysis we conducted before.
+
+$$
+\text{eigvals}(J_{\pi}) = -1, 1
+$$
+As an inverted pendulum can be kept in balance if perfectly upright, the negative value represents the pendulum's ability to remain still.
+However, if mildly toppled the pendulum will be moving away from this equilibrium point. This is what the positive eigen value represents.
+"""
+
+# %% [markdown]
+r"""
+### Vector Field and Trajectories (18, 19)
+"""
+
+# %%
