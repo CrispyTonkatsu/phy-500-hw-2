@@ -698,8 +698,8 @@ def solve_pendulum(A, h, x_0, step_count):
 
 x_inits = [[0, 0], [-1, -1], [-1, 1], [1, 1], [1, -1]]
 
-theta = np.linspace(-2 * np.pi, 2 * np.pi)
-omega = np.linspace(-2 * np.pi, 2 * np.pi)
+theta = np.linspace(-3, 3)
+omega = np.linspace(-3, 3)
 Theta, Omega = np.meshgrid(theta, omega)
 
 dTheta = Omega
@@ -708,17 +708,20 @@ dOmega = -np.sin(Theta)
 plt.figure(figsize=(6, 6))
 plt.title("Pendulum Trajectories")
 
-step_count = 30
+h = 0.05
+step_count = 100
 for x_0 in x_inits:
     points = solve_pendulum(mat_pendulum, h, np.array(x_0), step_count)
-    plt.plot(points[:, 0], points[:, 1], marker="o", label=f"$x_0 = {x_0}$")
+    plt.plot(points[:, 0], points[:, 1], linestyle="--", label=f"$x_0 = {x_0}$")
 
     plt.text(x_0[0], x_0[1] + 0.1, f"$x_0 = {x_0}$")
 
-plt.streamplot(Theta, Omega, dTheta, dOmega)
+plt.quiver(Theta, Omega, dTheta, dOmega, dTheta)
 
 plt.xlabel(r"$\theta$")
 plt.ylabel(r"$\omega$")
+plt.xlim(-3, 3)
+plt.ylim(-3, 3)
 plt.show()
 
 # %% [markdown]
@@ -735,5 +738,9 @@ matrix_slope_field(0, jP, x_inits, [], "Linearization $J_{\\pi}$")
 
 # %% [markdown]
 r"""
-Markdown test
+So by looking at the linearizations vs the real graph, it can be seen that the linearizations happen to become distrorted at extreme cases.
+More specifically, the cases where there is another equilibrium point nearby.
+For example, look at the path of $x_0 = (1,1)$, the better linearization for this case is $J_0$ as the path more closely resembles that of the slope field.
+In the case of the points further away, as $x \rightarrow \pi$ it can be seen how the $J_0$ approximation preserves the oscillation while the actual system doesn't.
+This would be a good use for the $J_{\pi}$ linearization instead.
 """
