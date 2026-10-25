@@ -373,31 +373,55 @@ r"""
 # %% jupyter={"source_hidden": true}
 
 
-def matrix_slope_field(i, A):
-    x = np.linspace(-3, 3)
-    y = np.linspace(-3, 3)
+def solve_path(A, h, x_0, step_count):
+    output = [0] * step_count
+    output[0] = x_0
+
+    for i in range(step_count - 1):
+        x_n = output[i]
+        output[i + 1] = x_n + h * A @ x_n
+
+    return np.array(output)
+
+
+def matrix_slope_field(i, A, x_inits):
+    q = np.linspace(-3, 3)
+    v = np.linspace(-3, 3)
 
     step = 2
-    X, Y = np.meshgrid(x[::step], y[::step])
-    U = A[0, 0] * X + A[0, 1] * Y
-    V = A[1, 0] * X + A[1, 1] * Y
+    Q, V = np.meshgrid(q[::step], v[::step])
+    U = A[0, 0] * Q + A[0, 1] * V
+    UV = A[1, 0] * Q + A[1, 1] * V
 
-    M = np.sqrt(U**2 + V**2)
+    M = np.sqrt(U**2 + UV**2)
     M[M == 0] = 1.0
 
-    U_unit = U / M
-    V_unit = V / M
+    U_unit = V / M
+    V_unit = UV / M
+
+    h = q[1] - q[0]
 
     plt.figure(figsize=(8, 4))
-    plt.title(f"Slope field for system $A_{i + 1}$")
+    plt.title(f"Slope field for system $A_{i + 1}$ with $ \\Delta t = {h}$")
 
-    plt.quiver(X, Y, U_unit, V_unit, M)
+    plt.quiver(Q, V, U_unit, V_unit, M)
 
+    step_count = 30
+    for x_0 in x_inits:
+        points = solve_path(A, h, np.array(x_0), step_count)
+        plt.plot(points[:, 0], points[:, 1], marker="o")
+
+        plt.text(x_0[0], x_0[1] + 0.1, f"$x_0 = {x_0}$")
+
+    plt.xlim(-3, 3)
+    plt.ylim(-3, 3)
     plt.xlabel("q")
     plt.ylabel("v")
     plt.grid(True)
     plt.show()
 
 
+x_inits = [[0, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]]
+
 for i, mat in enumerate(matrices):
-    matrix_slope_field(i, sp.matrix2numpy(mat, dtype=float))
+    matrix_slope_field(i, sp.matrix2numpy(mat, dtype=float), x_inits)
