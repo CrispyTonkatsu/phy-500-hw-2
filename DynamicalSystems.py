@@ -384,7 +384,7 @@ def solve_path(A, h, x_0, step_count):
     return np.array(output)
 
 
-def matrix_slope_field(i, A, x_inits, eigvecs):
+def matrix_slope_field(i, A, x_inits, eigvecs, name=None):
     q = np.linspace(-3, 3)
     v = np.linspace(-3, 3)
 
@@ -402,7 +402,10 @@ def matrix_slope_field(i, A, x_inits, eigvecs):
     h = q[1] - q[0]
 
     plt.figure(figsize=(6, 6))
-    plt.title(f"Slope field for system $A_{i + 1}$ with $ \\Delta t = {h}$")
+    if name is None:
+        plt.title(f"Slope field for system $A_{i + 1}$ with $ \\Delta t = {h}$")
+    else:
+        plt.title(f"{name} with $ \\Delta t = {h}$")
 
     plt.quiver(Q, V, U_unit, V_unit, M)
 
@@ -632,7 +635,7 @@ To get $J$, just get the derivatives of $\ddot{\theta}$ with respect to $\theta$
 $$
 J = \begin{bmatrix}
     0 & 1 \\
-    -cos(\theta) & 0
+    -\cos(\theta) & 0
 \end{bmatrix}
 $$
 """
@@ -675,4 +678,62 @@ r"""
 ### Vector Field and Trajectories (18, 19)
 """
 
-# %%
+# %% jupyter={"source_hidden": true}
+
+
+def mat_pendulum(x):
+    return np.array([[0, 1], [-np.sin(x[0]), 0]])
+
+
+def solve_pendulum(A, h, x_0, step_count):
+    output = [0] * step_count
+    output[0] = x_0
+
+    for i in range(step_count - 1):
+        x_n = output[i]
+        output[i + 1] = x_n + h * A(x_n) @ x_n
+
+    return np.array(output)
+
+
+x_inits = [[0, 0], [-1, -1], [-1, 1], [1, 1], [1, -1]]
+
+theta = np.linspace(-2 * np.pi, 2 * np.pi)
+omega = np.linspace(-2 * np.pi, 2 * np.pi)
+Theta, Omega = np.meshgrid(theta, omega)
+
+dTheta = Omega
+dOmega = -np.sin(Theta)
+
+plt.figure(figsize=(6, 6))
+plt.title("Pendulum Trajectories")
+
+step_count = 30
+for x_0 in x_inits:
+    points = solve_pendulum(mat_pendulum, h, np.array(x_0), step_count)
+    plt.plot(points[:, 0], points[:, 1], marker="o", label=f"$x_0 = {x_0}$")
+
+    plt.text(x_0[0], x_0[1] + 0.1, f"$x_0 = {x_0}$")
+
+plt.streamplot(Theta, Omega, dTheta, dOmega)
+
+plt.xlabel(r"$\theta$")
+plt.ylabel(r"$\omega$")
+plt.show()
+
+# %% [markdown]
+r"""
+### Comparison (20)
+"""
+
+# %% jupyter={"source_hidden": true}
+j0 = np.array([[0, 1], [-1, 0]], dtype=float)
+matrix_slope_field(0, j0, x_inits, [], "Linearization $J_0$")
+
+jP = np.array([[0, 1], [1, 0]], dtype=float)
+matrix_slope_field(0, jP, x_inits, [], "Linearization $J_{\\pi}$")
+
+# %% [markdown]
+r"""
+Markdown test
+"""
