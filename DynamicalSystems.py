@@ -384,7 +384,7 @@ def solve_path(A, h, x_0, step_count):
     return np.array(output)
 
 
-def matrix_slope_field(i, A, x_inits):
+def matrix_slope_field(i, A, x_inits, eigvecs):
     q = np.linspace(-3, 3)
     v = np.linspace(-3, 3)
 
@@ -409,19 +409,33 @@ def matrix_slope_field(i, A, x_inits):
     step_count = 30
     for x_0 in x_inits:
         points = solve_path(A, h, np.array(x_0), step_count)
-        plt.plot(points[:, 0], points[:, 1], marker="o")
+        plt.plot(points[:, 0], points[:, 1], marker="o", label=f"$x_0 = {x_0}$")
 
         plt.text(x_0[0], x_0[1] + 0.1, f"$x_0 = {x_0}$")
+
+    for eigvec in eigvecs:
+        if eigvec is not None:
+            s = np.linspace(-3, 3)
+            plt.plot(s * eigvec[0], s * eigvec[1], label="Eigenvector line")
 
     plt.xlim(-3, 3)
     plt.ylim(-3, 3)
     plt.xlabel("q")
     plt.ylabel("v")
     plt.grid(True)
+    plt.legend()
     plt.show()
 
 
 x_inits = [[0, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]]
 
 for i, mat in enumerate(matrices):
-    matrix_slope_field(i, sp.matrix2numpy(mat, dtype=float), x_inits)
+    eig_data = mat.eigenvects()
+    eigvecs = []
+    for eig_val, mult, eig_vec in eig_data:
+        if eig_val.is_real:
+            eigvecs.append(sp.matrix2numpy(eig_vec[0], dtype=float))
+        else:
+            eigvecs.append(None)
+
+    matrix_slope_field(i, sp.matrix2numpy(mat, dtype=float), x_inits, eigvecs)
